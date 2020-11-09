@@ -9,10 +9,7 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
-import ro.alegeri.data.Candidat;
-import ro.alegeri.data.Functie;
-import ro.alegeri.data.Judet;
-import ro.alegeri.data.Partid;
+import ro.alegeri.data.*;
 import ro.alegeri.data.utils.Judete;
 import ro.alegeri.utils.ExcelUtils;
 import ro.alegeri.utils.HttpClient;
@@ -21,9 +18,9 @@ import ro.alegeri.utils.StringUtils;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Paths;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Slf4j
 public class DescarcaDateXLS {
@@ -57,7 +54,7 @@ public class DescarcaDateXLS {
         /*
          * Initializare...
          */
-        final Map<String, List<Candidat>> candidatiSenat = new LinkedHashMap<>();          // Partid (cod) -> Lista candidati
+        final Map<Partid, List<Candidat>> candidatiSenat = new LinkedHashMap<>();          // Partid (cod) -> Lista candidati
 
         /*
          * Descarca fisier...
@@ -88,7 +85,7 @@ public class DescarcaDateXLS {
 
             switch (candidat.getFunctie()) {
                 case SENAT -> {
-                    candidatiSenat.computeIfAbsent(candidat.getPartid().getCod(), partid -> new LinkedList<>())
+                    candidatiSenat.computeIfAbsent(candidat.getPartid(), partid -> new LinkedList<>())
                             .add(candidat);
                 }
                 case CDEP -> {
@@ -105,14 +102,14 @@ public class DescarcaDateXLS {
         // partide.json
         final File fileSenat = Paths.get(dirJudet.toString(), "senat.json").toFile();
         log.info("+ " + fileSenat.getCanonicalPath());
-        FileUtils.writeStringToFile(fileSenat, JSON_WRITER_PRETTY.writeValueAsString(candidatiSenat), StandardCharsets.UTF_8);
+        JSON_WRITER_PRETTY.writeValue(fileSenat, candidatiSenat.entrySet().stream()
+                .map(entry -> Lista.builder().partid(entry.getKey()).candidati(entry.getValue()).build())
+                .collect(Collectors.toList())
+        );
     }
 
     /**
      * Descarca fisier date pentru Senat
-     * @param judet
-     * @return
-     * @throws Exception
      */
     private static File descarcaFisierSenat(Judet judet) throws Exception {
         File file = FileUtils.getFile("build", "data", judet.getCod() + ".xls");

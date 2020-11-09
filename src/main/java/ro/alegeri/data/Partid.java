@@ -23,9 +23,9 @@ public enum Partid {
     PARTIDUL_PUTERII_UMANISTE               ("PPU",      "PARTIDUL PUTERII UMANISTE (SOCIAL-LIBERAL)",      "Partidul Puterii Umaniste (social - liberal)",         "https://ppusl.ro",                     "https://www.facebook.com/partidulputeriiumaniste/"),
     PARTIDUL_ROMANIA_MARE                   ("PAM",      "PARTIDUL ROMÂNIA MARE",                           "Partidul România Mare",                                null,                                   "https://www.facebook.com/PartidulRomaniaMare"),
     PARTIDUL_SOCIAL_DEMOCRAT                ("PSD",      "PARTIDUL SOCIAL DEMOCRAT",                        "Partidul Social Democrat",                             "https://psd.ro",                       "https://www.facebook.com/PartidulSocialDemocrat"),
-    PARTIDUL_SOCIAL_DEMOCRAT_AL_MUNCITORILOR("PSDM",     "PARTIDUL SOCIAL DEMOCRAT AL MUNCITORILOR",        "Partidul Social Democrat al Muncitorilor",             null,                                   "https://www.facebook.com/PSDM-Partidul-Social-Democrat-al-Muncitorilor-487955861284956/"),
+    PARTIDUL_SOCIAL_DEMOCRAT_AL_MUNCITORILOR("PSDM",     "PARTIDUL SOCIAL DEMOCRAT AL MUNCITORILOR",        "Partidul Social Democrat al Muncitorilor",             "http://psdm.ro",                       "https://www.facebook.com/PSDM-Partidul-Social-Democrat-al-Muncitorilor-487955861284956/"),
     PARTIDUL_SOCIALIST_ROMAN                ("PSR",      "PARTIDUL SOCIALIST ROMÂN",                        "Partidul Socialist Român",                             "http://psr.org.ro",                    "https://www.facebook.com/OrganizatiaMunicipiuluiBucuresti/"),
-    PARTIDUL_VERDE                          ("PR",       "PARTIDUL VERDE",                                  "Partidul Verde",                                       "https://partidulverde.ro",             "https://www.facebook.com/Partidul.Verde/"),
+    PARTIDUL_VERDE                          ("PV",       "PARTIDUL VERDE",                                  "Partidul Verde",                                       "https://partidulverde.ro",             "https://www.facebook.com/Partidul.Verde/"),
     UNIUNEA_DEMOCRATA_MAGHIARA              ("UDMR",     "UNIUNEA DEMOCRATĂ MAGHIARĂ DIN ROMÂNIA",          "Uniunea Democrată Maghiară din România",               "http://udmr.ro/",                      null)
     ;
 
