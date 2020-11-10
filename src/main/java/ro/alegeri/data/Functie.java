@@ -7,7 +7,7 @@ import java.util.Arrays;
 @AllArgsConstructor
 public enum Functie {
     SENAT ("SENAT"),
-    CDEP  ("CDEP");
+    CDEP  ("CAMERA DEPUTAȚILOR");
 
     String functie;
 
