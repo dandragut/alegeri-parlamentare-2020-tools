@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.net.URLCodec;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.math3.util.Pair;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -55,8 +56,8 @@ public class DescarcaDateXLS {
         /*
          * Proceseaza XLS...
          */
-        final Map<Partid, List<Candidat>> candidatiSenat = proceseazaFisierSenat(descarcaFisierSenat(judet));
-        final Map<Partid, List<Candidat>> candidatiCDEP  = proceseazaFisierCDEP (descarcaFisierCDEP (judet));
+        final Map<Pair<Integer, Partid>, List<Candidat>> candidatiSenat = proceseazaFisierSenat(descarcaFisierSenat(judet));
+        final Map<Pair<Integer, Partid>, List<Candidat>> candidatiCDEP  = proceseazaFisierCDEP (descarcaFisierCDEP (judet));
 
         /*
          * Scrie JSON...
@@ -68,7 +69,9 @@ public class DescarcaDateXLS {
         final File fileSenat = Paths.get(dirJudet.toString(), "senat.json").toFile();
         log.info("+ " + fileSenat.getCanonicalPath());
         JSON_WRITER_PRETTY.writeValue(fileSenat, candidatiSenat.entrySet().stream()
-                .map(entry -> Lista.builder().partid(entry.getKey()).candidati(entry.getValue()).build())
+                .map(entry -> Lista.builder()
+                        .partid(entry.getKey().getValue())
+                        .candidati(entry.getValue()).build())
                 .collect(Collectors.toList())
         );
 
@@ -76,7 +79,9 @@ public class DescarcaDateXLS {
         final File fileCDEP = Paths.get(dirJudet.toString(), "cdep.json").toFile();
         log.info("+ " + fileCDEP.getCanonicalPath());
         JSON_WRITER_PRETTY.writeValue(fileCDEP, candidatiCDEP.entrySet().stream()
-                .map(entry -> Lista.builder().partid(entry.getKey()).candidati(entry.getValue()).build())
+                .map(entry -> Lista.builder()
+                        .partid(entry.getKey().getSecond())
+                        .candidati(entry.getValue()).build())
                 .collect(Collectors.toList())
         );
     }
@@ -87,11 +92,11 @@ public class DescarcaDateXLS {
      * @return Lista candidati per partid.
      * @throws IOException Daca fisierul nu exista sa nu poate fi deschis.
      */
-    private static Map<Partid, List<Candidat>> proceseazaFisierSenat(File xls) throws IOException {
+    private static Map<Pair<Integer, Partid>, List<Candidat>> proceseazaFisierSenat(File xls) throws IOException {
         /*
          * Initializare
          */
-        final Map<Partid, List<Candidat>> candidati = new LinkedHashMap<>();          // Partid (cod) -> Lista candidati
+        final Map<Pair<Integer, Partid>, List<Candidat>> candidati = new LinkedHashMap<>();          // Partid (cod) -> Lista candidati
 
         /*
          * Proceseaza fisier...
@@ -105,18 +110,16 @@ public class DescarcaDateXLS {
                 continue;
             }
 
-//            log.info(row.getRowNum() + " / " + worksheet.getLastRowNum());
-
             // Candidat...
             Candidat candidat = Candidat.builder()
-                    .functie (Functie.fromExcel (ExcelUtils.getCellValue(row, 8)))
-                    .partid  (Partid.fromExcel  (ExcelUtils.getCellValue(row, 3)))
-                    .nume    (StringUtils.capitalizeFully(ExcelUtils.getCellValue(row, 6)) + " " + StringUtils.capitalizeFully(ExcelUtils.getCellValue(row, 7)))
-                    .pozitie (NumberUtils.createInteger(ExcelUtils.getCellValue(row, 9)))
+                    .functie (Functie.fromExcel (ExcelUtils.getString(row, 8)))
+                    .partid  (Partid.fromExcel  (ExcelUtils.getString(row, 3)))
+                    .nume    (StringUtils.capitalizeFully(ExcelUtils.getString(row, 6)) + " " + StringUtils.capitalizeFully(ExcelUtils.getString(row, 7)))
+                    .pozitie (NumberUtils.createInteger(ExcelUtils.getString(row, 9)))
                     .build();
 
-            candidati.computeIfAbsent(candidat.getPartid(), partid -> new LinkedList<>())
-                            .add(candidat);
+            candidati.computeIfAbsent(Pair.create(ExcelUtils.getInteger(row, 4), candidat.getPartid()), partid -> new LinkedList<>())
+                    .add(candidat);
         }
 
         /*
@@ -144,11 +147,11 @@ public class DescarcaDateXLS {
      * @return Lista candidati per partid.
      * @throws IOException Daca fisierul nu exista sa nu poate fi deschis.
      */
-    private static Map<Partid, List<Candidat>> proceseazaFisierCDEP(File xls) throws IOException {
+    private static Map<Pair<Integer, Partid>, List<Candidat>> proceseazaFisierCDEP(File xls) throws IOException {
         /*
          * Initializare
          */
-        final Map<Partid, List<Candidat>> candidati = new LinkedHashMap<>();          // Partid (cod) -> Lista candidati
+        final Map<Pair<Integer, Partid>, List<Candidat>> candidati = new LinkedHashMap<>();          // <Pozitie buletin / Partid> -> Lista candidati
 
         /*
          * Proceseaza fisier...
@@ -166,13 +169,14 @@ public class DescarcaDateXLS {
 
             // Candidat...
             Candidat candidat = Candidat.builder()
-                    .functie (Functie.fromExcel (ExcelUtils.getCellValue(row, 8)))
-                    .partid  (Partid.fromExcel  (ExcelUtils.getCellValue(row, 3)))
-                    .nume    (StringUtils.capitalizeFully(ExcelUtils.getCellValue(row, 6)) + " " + StringUtils.capitalizeFully(ExcelUtils.getCellValue(row, 7)))
-                    .pozitie (NumberUtils.createInteger(ExcelUtils.getCellValue(row, 9)))
+                    .functie (Functie.fromExcel (ExcelUtils.getString(row, 8)))
+                    .partid  (Partid.fromExcel  (ExcelUtils.getString(row, 3)))
+                    .nume    (StringUtils.capitalizeFully(ExcelUtils.getString(row, 6)) + " " + StringUtils.capitalizeFully(ExcelUtils.getString(row, 7)))
+                    .pozitie (ExcelUtils.getInteger(row, 9))
                     .build();
 
-            candidati.computeIfAbsent(candidat.getPartid(), partid -> new LinkedList<>())
+            // Adauga...
+            candidati.computeIfAbsent(Pair.create(ExcelUtils.getInteger(row, 4), candidat.getPartid()), partid -> new LinkedList<>())
                     .add(candidat);
         }
 
