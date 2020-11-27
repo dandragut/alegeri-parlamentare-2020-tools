@@ -2,7 +2,7 @@ plugins {
     id 'java'
     id 'application'
     id 'idea'
-    id 'com.github.ben-manes.versions' version '0.34.0'
+    id 'com.github.ben-manes.versions' version '0.36.0'
 }
 
 sourceCompatibility = JavaVersion.VERSION_14
@@ -26,7 +26,7 @@ dependencies {
     implementation          'org.apache.poi:poi-ooxml:4.1.2'
 
     // JSON
-    implementation(platform('com.fasterxml.jackson:jackson-bom:2.12.0-rc1'))
+    implementation(platform('com.fasterxml.jackson:jackson-bom:2.12.0-rc2'))
     implementation          'com.fasterxml.jackson.core:jackson-databind'
     implementation          'com.fasterxml.jackson.module:jackson-module-paranamer'
 
@@ -36,7 +36,7 @@ dependencies {
     implementation          'com.squareup.okhttp3:logging-interceptor'
 
     // Selenium
-    implementation         ('org.seleniumhq.selenium:selenium-java:4.0.0-alpha-6') {
+    implementation         ('org.seleniumhq.selenium:selenium-java:4.0.0-alpha-7') {
         exclude group: 'org.seleniumhq.selenium', module: 'selenium-android-driver'
         exclude group: 'org.seleniumhq.selenium', module: 'selenium-iphone-driver'
         exclude group: 'org.seleniumhq.selenium', module: 'selenium-safari-driver'
